@@ -1,0 +1,232 @@
+{% extends 'base.html' %}
+{% block title %}Analytics | Ames Valuer AI{% endblock %}
+{% block page_title %}AI Analytics Dashboard{% endblock %}
+
+{% block content %}
+<div class="row">
+    <!-- Row 1: Neighborhood Comparison & Quality Trends -->
+    <div class="col-lg-8 mb-4">
+        <div class="glass-card h-100">
+            <h5 class="fw-bold mb-4 font-monospace"><i class="fa-solid fa-chart-simple text-primary me-2"></i>Neighborhood Average Price Comparison</h5>
+            <div style="position: relative; height: 350px; width: 100%;">
+                <canvas id="neighborAvgChart"></canvas>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-4 mb-4">
+        <div class="glass-card h-100">
+            <h5 class="fw-bold mb-4 font-monospace"><i class="fa-solid fa-brain text-purple me-2"></i>Model Distribution</h5>
+            <div style="position: relative; height: 300px; width: 100%;">
+                <canvas id="modelPieChart"></canvas>
+            </div>
+            <p class="text-secondary small text-center mt-3">Breakdown of algorithms engaged for prediction history runs.</p>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Row 2: Price trends by quality and history over time -->
+    <div class="col-lg-6 mb-4">
+        <div class="glass-card h-100">
+            <h5 class="fw-bold mb-4 font-monospace"><i class="fa-solid fa-sliders text-warning me-2"></i>Value Trends by Overall Quality</h5>
+            <div style="position: relative; height: 300px; width: 100%;">
+                <canvas id="qualityTrendChart"></canvas>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-6 mb-4">
+        <div class="glass-card h-100">
+            <h5 class="fw-bold mb-4 font-monospace"><i class="fa-solid fa-timeline text-success me-2"></i>Prediction Valuation History Timeline</h5>
+            <div style="position: relative; height: 300px; width: 100%;">
+                <canvas id="timeLineChart"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        let themeColorGrid = 'rgba(255,255,255,0.06)';
+        let themeColorText = '#94a3b8';
+        
+        function getThemeConfig() {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            if (currentTheme === 'light') {
+                themeColorGrid = 'rgba(15,23,42,0.06)';
+                themeColorText = '#475569';
+            } else {
+                themeColorGrid = 'rgba(255,255,255,0.06)';
+                themeColorText = '#94a3b8';
+            }
+        }
+        
+        getThemeConfig();
+
+        // 1. Neighborhood Averages Bar Chart
+        const neighCtx = document.getElementById('neighborAvgChart').getContext('2d');
+        const neighborAvgChart = new Chart(neighCtx, {
+            type: 'bar',
+            data: {
+                labels: {{ neighborhood_labels|safe }},
+                datasets: [{
+                    label: 'Avg Predicted Price (USD)',
+                    data: {{ neighborhood_prices|safe }},
+                    backgroundColor: 'rgba(99, 102, 241, 0.75)',
+                    borderColor: '#6366f1',
+                    borderWidth: 1.5,
+                    borderRadius: 6,
+                    barPercentage: 0.6
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false }
+                },
+                scales: {
+                    x: {
+                        grid: { color: themeColorGrid },
+                        ticks: { color: themeColorText }
+                    },
+                    y: {
+                        grid: { color: themeColorGrid },
+                        ticks: {
+                            color: themeColorText,
+                            callback: function(val) { return '$' + val.toLocaleString(); }
+                        }
+                    }
+                }
+            }
+        });
+
+        // 2. Model usage pie chart
+        const modelCtx = document.getElementById('modelPieChart').getContext('2d');
+        const modelPieChart = new Chart(modelCtx, {
+            type: 'doughnut',
+            data: {
+                labels: {{ model_labels|safe }},
+                datasets: [{
+                    data: {{ model_counts|safe }},
+                    backgroundColor: [
+                        '#6366f1',
+                        '#3b82f6',
+                        '#10b981',
+                        '#a855f7'
+                    ],
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: { color: themeColorText }
+                    }
+                }
+            }
+        });
+
+        // 3. Quality vs Price trend
+        const qualCtx = document.getElementById('qualityTrendChart').getContext('2d');
+        const qualityTrendChart = new Chart(qualCtx, {
+            type: 'line',
+            data: {
+                labels: {{ quality_labels|safe }},
+                datasets: [{
+                    label: 'Avg Price',
+                    data: {{ quality_prices|safe }},
+                    borderColor: '#a855f7',
+                    backgroundColor: 'rgba(168, 85, 247, 0.1)',
+                    borderWidth: 3,
+                    fill: true,
+                    tension: 0.2,
+                    pointBackgroundColor: '#a855f7'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false }
+                },
+                scales: {
+                    x: {
+                        grid: { color: themeColorGrid },
+                        ticks: { color: themeColorText }
+                    },
+                    y: {
+                        grid: { color: themeColorGrid },
+                        ticks: {
+                            color: themeColorText,
+                            callback: function(val) { return '$' + val.toLocaleString(); }
+                        }
+                    }
+                }
+            }
+        });
+
+        // 4. Prediction Timeline line chart
+        const timeCtx = document.getElementById('timeLineChart').getContext('2d');
+        const timeLineChart = new Chart(timeCtx, {
+            type: 'line',
+            data: {
+                labels: {{ time_labels|safe }},
+                datasets: [{
+                    label: 'Value (USD)',
+                    data: {{ time_prices|safe }},
+                    borderColor: '#10b981',
+                    backgroundColor: 'rgba(16, 185, 129, 0.05)',
+                    borderWidth: 2,
+                    fill: true,
+                    tension: 0.4,
+                    pointBackgroundColor: '#10b981'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false }
+                },
+                scales: {
+                    x: {
+                        grid: { color: themeColorGrid },
+                        ticks: { color: themeColorText }
+                    },
+                    y: {
+                        grid: { color: themeColorGrid },
+                        ticks: {
+                            color: themeColorText,
+                            callback: function(val) { return '$' + val.toLocaleString(); }
+                        }
+                    }
+                }
+            }
+        });
+
+        // Theme switch listener
+        window.addEventListener('themeChanged', function() {
+            getThemeConfig();
+            
+            // Update charts
+            [neighborAvgChart, qualityTrendChart, timeLineChart].forEach(chart => {
+                chart.options.scales.x.grid.color = themeColorGrid;
+                chart.options.scales.y.grid.color = themeColorGrid;
+                chart.options.scales.x.ticks.color = themeColorText;
+                chart.options.scales.y.ticks.color = themeColorText;
+                chart.update();
+            });
+            
+            modelPieChart.options.plugins.legend.labels.color = themeColorText;
+            modelPieChart.update();
+        });
+    });
+</script>
+{% endblock %}

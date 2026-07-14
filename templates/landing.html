@@ -1,0 +1,114 @@
+{% extends 'base.html' %}
+{% block title %}Ames Valuer AI | Real Estate House Price Prediction{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <!-- Hero Section -->
+    <section class="landing-hero my-5">
+        <h1 class="landing-title">
+            AI-Powered <br>
+            <span class="neon-text-gradient">House Price Predictor</span>
+        </h1>
+        <p class="text-secondary col-lg-7 mx-auto fs-5 mb-5" style="line-height: 1.6;">
+            Leverage state-of-the-art Machine Learning models trained on physical and geographical housing
+            specifications to forecast property values in Ames, Iowa instantly.
+        </p>
+        <div class="d-flex justify-content-center gap-3">
+            <a href="{% url 'register' %}" class="btn btn-custom px-4 py-2.5 fw-bold"><i
+                    class="fa-solid fa-rocket me-2"></i>Get Started Free</a>
+            <a href="{% url 'login' %}" class="btn btn-custom-outline px-4 py-2.5 fw-bold">Sign In Dashboard</a>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="my-5 py-4">
+        <h3 class="text-center fw-bold mb-5 font-monospace"><i class="fa-solid fa-cube text-primary me-2"></i>Engine
+            Features</h3>
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="glass-card glass-card-interactive h-100 p-4">
+                    <div class="icon-box text-primary">
+                        <i class="fa-solid fa-microchip"></i>
+                    </div>
+                    <h5 class="fw-bold mb-2">Gradient Boosting AI</h5>
+                    <p class="text-secondary small mb-0">
+                        Evaluates properties using a composite model built on XGBoost and Gradient Boosting regressors,
+                        ensuring a 90%+ variance explanation index (R²).
+                    </p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="glass-card glass-card-interactive h-100 p-4">
+                    <div class="icon-box text-success">
+                        <i class="fa-solid fa-chart-line"></i>
+                    </div>
+                    <h5 class="fw-bold mb-2">Value Projections</h5>
+                    <p class="text-secondary small mb-0">
+                        Projects the value of evaluated properties for the next 5 years based on neighborhood-specific
+                        historical housing appreciation rates.
+                    </p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="glass-card glass-card-interactive h-100 p-4">
+                    <div class="icon-box text-warning">
+                        <i class="fa-solid fa-tags"></i>
+                    </div>
+                    <h5 class="fw-bold mb-2">Similar Property Match</h5>
+                    <p class="text-secondary small mb-0">
+                        Analyzes the Ames residential transactions database to identify the 3 closest historical sales
+                        of similar size and build.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Project Context / About Section -->
+    <section class="glass-card my-5 p-4 p-md-5">
+        <div class="row align-items-center">
+            <div class="col-lg-6 mb-4 mb-lg-0">
+                <h3 class="fw-bold mb-3"><i class="fa-solid fa-database text-primary me-2"></i>About the AI Valuer</h3>
+                <p class="text-secondary small" style="line-height: 1.6;">
+                    The Ames Housing Dataset represents residential transactions in Ames, Iowa, spanning 2006 to 2010.
+                    It details 81 characteristics (from physical metrics like lot area, living square footage, and
+                    basement size, to qualitative scores like material finish and neighborhood location).
+                </p>
+                <p class="text-secondary small" style="line-height: 1.6;">
+                    Our ML Pipeline cleans structural outliers, imputes minor missing features, merges overlapping
+                    bathroom attributes, and trains four regression benchmarks to dynamically pick the strongest
+                    predictor.
+                </p>
+            </div>
+            <div class="col-lg-6">
+                <div class="row g-3">
+                    <div class="col-6">
+                        <div class="p-3 bg-secondary-subtle rounded border border-secondary-subtle">
+                            <h4 class="fw-bold text-primary mb-1">1,400+</h4>
+                            <p class="text-secondary small mb-0">Training Records</p>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="p-3 bg-secondary-subtle rounded border border-secondary-subtle">
+                            <h4 class="fw-bold text-success mb-1">13</h4>
+                            <p class="text-secondary small mb-0">Input Features</p>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="p-3 bg-secondary-subtle rounded border border-secondary-subtle">
+                            <h4 class="fw-bold text-warning mb-1">0.909</h4>
+                            <p class="text-secondary small mb-0">Model R² Score</p>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="p-3 bg-secondary-subtle rounded border border-secondary-subtle">
+                            <h4 class="fw-bold text-danger mb-1">&lt; 10ms</h4>
+                            <p class="text-secondary small mb-0">Prediction Latency</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+{% endblock %}

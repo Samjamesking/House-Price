@@ -1,0 +1,159 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="AI-Powered House Price Prediction Web Application using Django and Machine Learning.">
+    <title>{% block title %}Ames Real Estate Predictor{% endblock %}</title>
+    
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom Style Sheet -->
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <div class="gradient-bg"></div>
+    
+    <div class="wrapper">
+        <!-- Sidebar Navigation -->
+        <nav id="sidebar" class="d-flex flex-column">
+            <div class="sidebar-header">
+                <i class="fa-solid fa-house-chimney-crack me-2"></i>Ames Valuer AI
+            </div>
+            
+            <ul class="list-unstyled components flex-grow-1">
+                {% if user.is_authenticated %}
+                    <li class="{% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}">
+                        <a href="{% url 'dashboard' %}">
+                            <i class="fa-solid fa-gauge-high"></i> Dashboard
+                        </a>
+                    </li>
+                    <li class="{% if request.resolver_match.url_name == 'predict' or request.resolver_match.url_name == 'result_detail' %}active{% endif %}">
+                        <a href="{% url 'predict' %}">
+                            <i class="fa-solid fa-circle-nodes"></i> Predict Price
+                        </a>
+                    </li>
+                    <li class="{% if request.resolver_match.url_name == 'prediction_history' %}active{% endif %}">
+                        <a href="{% url 'prediction_history' %}">
+                            <i class="fa-solid fa-history"></i> History
+                        </a>
+                    </li>
+                    <li class="{% if request.resolver_match.url_name == 'analytics_dashboard' %}active{% endif %}">
+                        <a href="{% url 'analytics_dashboard' %}">
+                            <i class="fa-solid fa-chart-line"></i> Analytics
+                        </a>
+                    </li>
+                    <li class="{% if request.resolver_match.url_name == 'profile' %}active{% endif %}">
+                        <a href="{% url 'profile' %}">
+                            <i class="fa-solid fa-user-gear"></i> Profile
+                        </a>
+                    </li>
+                    
+                    {% if user.is_staff %}
+                        <li class="{% if request.resolver_match.url_name == 'admin_retrain' %}active{% endif %}">
+                            <a href="{% url 'admin_retrain' %}">
+                                <i class="fa-solid fa-sliders"></i> Model Retrain
+                            </a>
+                        </li>
+                    {% endif %}
+                {% else %}
+                    <li class="{% if request.resolver_match.url_name == 'landing' %}active{% endif %}">
+                        <a href="{% url 'landing' %}">
+                            <i class="fa-solid fa-globe"></i> Home
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{% url 'login' %}">
+                            <i class="fa-solid fa-sign-in-alt"></i> Login
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{% url 'register' %}">
+                            <i class="fa-solid fa-user-plus"></i> Register
+                        </a>
+                    </li>
+                {% endif %}
+            </ul>
+            
+            {% if user.is_authenticated %}
+                <div class="p-3 border-top border-secondary-subtle">
+                    <a href="{% url 'logout' %}" class="d-flex align-items-center text-decoration-none text-danger py-2 px-3 hover-bg rounded">
+                        <i class="fa-solid fa-right-from-bracket me-3"></i> Logout
+                    </a>
+                </div>
+            {% endif %}
+        </nav>
+        
+        <!-- Main Content Area -->
+        <div id="content">
+            <!-- Top Navbar -->
+            <div class="top-navbar">
+                <button type="button" id="sidebarCollapse" class="btn">
+                    <i class="fas fa-align-left"></i>
+                </button>
+                
+                <h4 class="mb-0 fw-bold d-none d-md-block">
+                    {% block page_title %}Real Estate Predictor{% endblock %}
+                </h4>
+                
+                <div class="d-flex align-items-center gap-3">
+                    <!-- Light/Dark Mode Switcher -->
+                    <button class="theme-toggle-btn" id="theme-toggle">
+                        <i class="fas fa-sun text-warning"></i>
+                    </button>
+                    
+                    {% if user.is_authenticated %}
+                        <div class="d-flex align-items-center gap-2">
+                            {% if user.profile.profile_picture %}
+                                <img src="{{ user.profile.profile_picture.url }}" alt="Profile" class="rounded-circle border" style="width: 36px; height: 36px; object-fit: cover;">
+                            {% else %}
+                                <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center fw-bold" style="width: 36px; height: 36px;">
+                                    {{ user.username|make_list|first|upper }}
+                                </div>
+                            {% endif %}
+                            <span class="d-none d-lg-inline text-secondary small">Hello, <strong>{{ user.username }}</strong></span>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <!-- Toast Notification Messages -->
+            {% if messages %}
+                <div class="toast-container">
+                    {% for message in messages %}
+                        <div class="alert alert-{% if message.tags == 'error' %}danger{% elif message.tags == 'info' %}info{% else %}{{ message.tags }}{% endif %} alert-dismissible fade show glass-card shadow" role="alert" style="background: rgba(22, 30, 49, 0.85); color: var(--text-primary); border-left: 5px solid {% if message.tags == 'error' %}#ef4444{% elif message.tags == 'success' %}#22c55e{% else %}#3b82f6{% endif %};">
+                            <div class="d-flex align-items-center gap-2">
+                                {% if message.tags == 'success' %}
+                                    <i class="fa-solid fa-circle-check text-success"></i>
+                                {% elif message.tags == 'error' %}
+                                    <i class="fa-solid fa-circle-exclamation text-danger"></i>
+                                {% else %}
+                                    <i class="fa-solid fa-circle-info text-primary"></i>
+                                {% endif %}
+                                <div>{{ message }}</div>
+                            </div>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close" style="filter: invert(1);"></button>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+            
+            <!-- Page Specific Content -->
+            {% block content %}{% endblock %}
+        </div>
+    </div>
+
+    <!-- Bootstrap 5 Bundle JS with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Chart.js for visualizations -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- FontAwesome JS helper if needed -->
+    <!-- Custom JS -->
+    <script src="{% static 'js/main.js' %}"></script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

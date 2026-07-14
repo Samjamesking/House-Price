@@ -1,0 +1,160 @@
+{% extends 'base.html' %}
+{% block title %}Evaluate Property | Ames Valuer AI{% endblock %}
+{% block page_title %}Evaluate Property{% endblock %}
+
+{% block content %}
+<div class="glass-card mb-4 p-4">
+    <div class="d-flex align-items-center gap-3 mb-3">
+        <div class="icon-box m-0 bg-primary-subtle text-primary rounded-circle d-flex align-items-center justify-content-center" style="width: 48px; height: 48px;">
+            <i class="fa-solid fa-calculator"></i>
+        </div>
+        <div>
+            <h4 class="fw-bold mb-0">House Price Valuation Engine</h4>
+            <p class="text-secondary small mb-0">Provide details below to generate a valuation forecast powered by Gradient Boosting AI.</p>
+        </div>
+    </div>
+    
+    <form method="POST" id="valuationForm" class="needs-validation">
+        {% csrf_token %}
+        
+        <!-- Row 1: Aesthetics & Location -->
+        <h5 class="fw-bold text-secondary mb-3 mt-4" style="font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.5px;">1. Aesthetics & Location</h5>
+        <div class="row">
+            <div class="col-md-4 mb-3">
+                <label for="{{ form.neighborhood.id_for_label }}" class="form-label">{{ form.neighborhood.label }}</label>
+                {{ form.neighborhood }}
+                {% for error in form.neighborhood.errors %}
+                    <div class="text-danger small mt-1"><i class="fa-solid fa-circle-exclamation me-1"></i>{{ error }}</div>
+                {% endfor %}
+            </div>
+            <div class="col-md-4 mb-3">
+                <label for="{{ form.overall_quality.id_for_label }}" class="form-label">{{ form.overall_quality.label }}</label>
+                {{ form.overall_quality }}
+                {% for error in form.overall_quality.errors %}
+                    <div class="text-danger small mt-1"><i class="fa-solid fa-circle-exclamation me-1"></i>{{ error }}</div>
+                {% endfor %}
+            </div>
+            <div class="col-md-4 mb-3">
+                <label for="{{ form.overall_condition.id_for_label }}" class="form-label">{{ form.overall_condition.label }}</label>
+                {{ form.overall_condition }}
+                {% for error in form.overall_condition.errors %}
+                    <div class="text-danger small mt-1"><i class="fa-solid fa-circle-exclamation me-1"></i>{{ error }}</div>
+                {% endfor %}
+            </div>
+        </div>
+        
+        <!-- Row 2: Lot & Time -->
+        <h5 class="fw-bold text-secondary mb-3 mt-4" style="font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.5px;">2. Lot & Foundation</h5>
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label for="{{ form.lot_area.id_for_label }}" class="form-label">{{ form.lot_area.label }}</label>
+                {{ form.lot_area }}
+                {% for error in form.lot_area.errors %}
+                    <div class="text-danger small mt-1"><i class="fa-solid fa-circle-exclamation me-1"></i>{{ error }}</div>
+                {% endfor %}
+            </div>
+            <div class="col-md-6 mb-3">
+                <label for="{{ form.year_built.id_for_label }}" class="form-label">{{ form.year_built.label }}</label>
+                {{ form.year_built }}
+                {% for error in form.year_built.errors %}
+                    <div class="text-danger small mt-1"><i class="fa-solid fa-circle-exclamation me-1"></i>{{ error }}</div>
+                {% endfor %}
+            </div>
+        </div>
+        
+        <!-- Row 3: Space & Dimensions -->
+        <h5 class="fw-bold text-secondary mb-3 mt-4" style="font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.5px;">3. Space & Layout</h5>
+        <div class="row">
+            <div class="col-md-4 mb-3">
+                <label for="{{ form.living_area.id_for_label }}" class="form-label">{{ form.living_area.label }}</label>
+                {{ form.living_area }}
+                {% for error in form.living_area.errors %}
+                    <div class="text-danger small mt-1"><i class="fa-solid fa-circle-exclamation me-1"></i>{{ error }}</div>
+                {% endfor %}
+            </div>
+            <div class="col-md-4 mb-3">
+                <label for="{{ form.basement_area.id_for_label }}" class="form-label">{{ form.basement_area.label }}</label>
+                {{ form.basement_area }}
+                {% for error in form.basement_area.errors %}
+                    <div class="text-danger small mt-1"><i class="fa-solid fa-circle-exclamation me-1"></i>{{ error }}</div>
+                {% endfor %}
+            </div>
+            <div class="col-md-4 mb-3">
+                <label for="{{ form.total_rooms.id_for_label }}" class="form-label">{{ form.total_rooms.label }}</label>
+                {{ form.total_rooms }}
+                {% for error in form.total_rooms.errors %}
+                    <div class="text-danger small mt-1"><i class="fa-solid fa-circle-exclamation me-1"></i>{{ error }}</div>
+                {% endfor %}
+            </div>
+        </div>
+        
+        <!-- Row 4: Rooms & Extras -->
+        <div class="row">
+            <div class="col-md-4 mb-3">
+                <label for="{{ form.bedrooms.id_for_label }}" class="form-label">{{ form.bedrooms.label }}</label>
+                {{ form.bedrooms }}
+                {% for error in form.bedrooms.errors %}
+                    <div class="text-danger small mt-1"><i class="fa-solid fa-circle-exclamation me-1"></i>{{ error }}</div>
+                {% endfor %}
+            </div>
+            <div class="col-md-4 mb-3">
+                <label for="{{ form.bathrooms.id_for_label }}" class="form-label">{{ form.bathrooms.label }}</label>
+                {{ form.bathrooms }}
+                {% for error in form.bathrooms.errors %}
+                    <div class="text-danger small mt-1"><i class="fa-solid fa-circle-exclamation me-1"></i>{{ error }}</div>
+                {% endfor %}
+            </div>
+            <div class="col-md-4 mb-3">
+                <label for="{{ form.fireplaces.id_for_label }}" class="form-label">{{ form.fireplaces.label }}</label>
+                {{ form.fireplaces }}
+                {% for error in form.fireplaces.errors %}
+                    <div class="text-danger small mt-1"><i class="fa-solid fa-circle-exclamation me-1"></i>{{ error }}</div>
+                {% endfor %}
+            </div>
+        </div>
+        
+        <!-- Row 5: Garage Specs -->
+        <h5 class="fw-bold text-secondary mb-3 mt-4" style="font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.5px;">4. Garage Facilities</h5>
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label for="{{ form.garage_capacity.id_for_label }}" class="form-label">{{ form.garage_capacity.label }}</label>
+                {{ form.garage_capacity }}
+                {% for error in form.garage_capacity.errors %}
+                    <div class="text-danger small mt-1"><i class="fa-solid fa-circle-exclamation me-1"></i>{{ error }}</div>
+                {% endfor %}
+            </div>
+            <div class="col-md-6 mb-3">
+                <label for="{{ form.garage_area.id_for_label }}" class="form-label">{{ form.garage_area.label }}</label>
+                {{ form.garage_area }}
+                {% for error in form.garage_area.errors %}
+                    <div class="text-danger small mt-1"><i class="fa-solid fa-circle-exclamation me-1"></i>{{ error }}</div>
+                {% endfor %}
+            </div>
+        </div>
+        
+        <div class="d-grid mt-5">
+            <button type="submit" class="btn btn-custom py-3 fw-bold" id="predictBtn">
+                <span class="normal-state"><i class="fa-solid fa-wand-magic-sparkles me-2"></i>Generate AI Price Valuation</span>
+                <span class="loading-state d-none">
+                    <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                    Evaluating characteristics and forecasting price...
+                </span>
+            </button>
+        </div>
+    </form>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.getElementById('valuationForm').addEventListener('submit', function() {
+        const btn = document.getElementById('predictBtn');
+        const normalState = btn.querySelector('.normal-state');
+        const loadingState = btn.querySelector('.loading-state');
+        
+        normalState.classList.add('d-none');
+        loadingState.classList.remove('d-none');
+        btn.setAttribute('disabled', 'disabled');
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,140 @@
+{% extends 'base.html' %}
+{% block title %}Model Retraining Panel | Ames Valuer AI{% endblock %}
+{% block page_title %}AI Model Management{% endblock %}
+
+{% block content %}
+<div class="row">
+    <!-- Current Model Status -->
+    <div class="col-lg-5 mb-4">
+        <div class="glass-card h-100 p-4 d-flex flex-column justify-content-between">
+            <div>
+                <h5 class="fw-bold mb-3 font-monospace text-primary"><i class="fa-solid fa-square-poll-vertical me-2"></i>Active Model Performance</h5>
+                {% if current_meta %}
+                    <div class="mb-4">
+                        <span class="text-secondary small font-monospace text-uppercase d-block mb-1">Engaged Architecture</span>
+                        <h4 class="fw-bold">{{ current_meta.model_name }}</h4>
+                    </div>
+                    <div class="row g-3 mb-4">
+                        <div class="col-6">
+                            <div class="p-3 bg-secondary-subtle rounded border border-secondary-subtle">
+                                <span class="text-secondary small font-monospace d-block" style="font-size: 0.65rem;">R² SCORE</span>
+                                <h4 class="fw-bold text-success mb-0">{{ current_meta.r2_score|floatformat:4 }}</h4>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="p-3 bg-secondary-subtle rounded border border-secondary-subtle">
+                                <span class="text-secondary small font-monospace d-block" style="font-size: 0.65rem;">MAE</span>
+                                <h4 class="fw-bold text-primary mb-0">${{ current_meta.mae|floatformat:2 }}</h4>
+                            </div>
+                        </div>
+                        <div class="col-12 mt-2">
+                            <div class="p-3 bg-secondary-subtle rounded border border-secondary-subtle">
+                                <span class="text-secondary small font-monospace d-block" style="font-size: 0.65rem;">ROOT MEAN SQUARED ERROR (RMSE)</span>
+                                <h4 class="fw-bold text-warning mb-0">${{ current_meta.rmse|floatformat:2 }}</h4>
+                            </div>
+                        </div>
+                    </div>
+                {% else %}
+                    <div class="alert alert-warning mb-4 py-3 text-center">
+                        <i class="fa-solid fa-triangle-exclamation mb-2 fs-3"></i>
+                        <p class="mb-0 small">No active model found. A model must be trained first.</p>
+                    </div>
+                {% endif %}
+            </div>
+            
+            <div>
+                <hr class="my-4 border-secondary-subtle">
+                <form method="POST" id="retrainForm">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-custom w-100 py-3 fw-bold" id="retrainBtn">
+                        <span class="normal-state"><i class="fa-solid fa-arrows-spin me-2"></i>Retrain AI Model</span>
+                        <span class="loading-state d-none">
+                            <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                            Re-indexing datasets & fitting models...
+                        </span>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Model Comparisons & Logs -->
+    <div class="col-lg-7 mb-4">
+        <div class="glass-card h-100 p-4">
+            <h5 class="fw-bold mb-3 font-monospace"><i class="fa-solid fa-laptop-code text-success me-2"></i>Training Execution Status</h5>
+            
+            {% if retrained and new_meta %}
+                <div class="alert alert-success d-flex align-items-center gap-2 mb-4">
+                    <i class="fa-solid fa-circle-check"></i>
+                    <div>Model retrained successfully! The active classifier pipeline has been updated.</div>
+                </div>
+                
+                <h6 class="fw-bold text-secondary mb-3" style="font-size: 0.8rem; text-transform: uppercase;">Benchmark Performance Comparison</h6>
+                <div class="table-responsive mb-4">
+                    <table class="table custom-table table-hover mb-0" style="font-size: 0.85rem;">
+                        <thead>
+                            <tr>
+                                <th>Metric</th>
+                                <th>Previous</th>
+                                <th>New Update</th>
+                                <th>Delta</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>R² Score</strong></td>
+                                <td class="font-monospace text-secondary">{{ old_meta.r2_score|floatformat:4 }}</td>
+                                <td class="font-monospace text-success fw-bold">{{ new_meta.r2_score|floatformat:4 }}</td>
+                                <td>
+                                    <span class="font-monospace fw-bold {% if r2_diff >= 0 %}text-success{% else %}text-danger{% endif %}">
+                                        {% if r2_diff >= 0 %}+{% endif %}{{ r2_diff|floatformat:4 }}
+                                    </span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><strong>Mean Absolute Error</strong></td>
+                                <td class="font-monospace text-secondary">${{ old_meta.mae|floatformat:2 }}</td>
+                                <td class="font-monospace text-primary fw-bold">${{ new_meta.mae|floatformat:2 }}</td>
+                                <td>
+                                    <span class="font-monospace fw-bold {% if mae_diff <= 0 %}text-success{% else %}text-danger{% endif %}">
+                                        {% if mae_diff > 0 %}+{% endif %}${{ mae_diff|floatformat:2 }}
+                                    </span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><strong>RMSE</strong></td>
+                                <td class="font-monospace text-secondary">${{ old_meta.rmse|floatformat:2 }}</td>
+                                <td class="font-monospace text-warning fw-bold">${{ new_meta.rmse|floatformat:2 }}</td>
+                                <td>
+                                    <span class="font-monospace fw-bold {% if rmse_diff <= 0 %}text-success{% else %}text-danger{% endif %}">
+                                        {% if rmse_diff > 0 %}+{% endif %}${{ rmse_diff|floatformat:2 }}
+                                    </span>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <div class="terminal-card text-center py-5 d-flex flex-column align-items-center justify-content-center text-secondary h-75" style="border: 1px dashed var(--card-border); background: transparent;">
+                    <i class="fa-solid fa-arrows-rotate fs-2 mb-3 text-secondary" style="opacity: 0.5;"></i>
+                    <p class="mb-0 small">Trigger retraining to initialize and write logs output.</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.getElementById('retrainForm').addEventListener('submit', function() {
+        const btn = document.getElementById('retrainBtn');
+        const normalState = btn.querySelector('.normal-state');
+        const loadingState = btn.querySelector('.loading-state');
+        
+        normalState.classList.add('d-none');
+        loadingState.classList.remove('d-none');
+        btn.setAttribute('disabled', 'disabled');
+    });
+</script>
+{% endblock %}

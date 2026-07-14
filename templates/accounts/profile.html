@@ -1,0 +1,103 @@
+{% extends 'base.html' %}
+{% block title %}My Profile | Ames Valuer AI{% endblock %}
+{% block page_title %}Profile Settings{% endblock %}
+
+{% block content %}
+<div class="row">
+    <!-- Left Column: Summary Card -->
+    <div class="col-lg-4 mb-4">
+        <div class="glass-card text-center p-4 h-100">
+            <div class="position-relative d-inline-block mx-auto mb-3">
+                {% if user.profile.profile_picture %}
+                    <img src="{{ user.profile.profile_picture.url }}" alt="Profile Picture" class="rounded-circle border border-3 border-primary shadow-sm" style="width: 140px; height: 140px; object-fit: cover;">
+                {% else %}
+                    <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center fw-bold border border-3 border-primary shadow-sm mx-auto" style="width: 140px; height: 140px; font-size: 4rem;">
+                        {{ user.username|make_list|first|upper }}
+                    </div>
+                {% endif %}
+            </div>
+            
+            <h4 class="fw-bold mb-1">{{ user.first_name }} {{ user.last_name }}</h4>
+            <p class="text-secondary small mb-3">@{{ user.username }}</p>
+            
+            <hr class="my-4 border-secondary-subtle">
+            
+            <div class="row text-center mb-2">
+                <div class="col-6 border-end border-secondary-subtle">
+                    <h3 class="fw-bold text-primary mb-1">{{ total_predictions }}</h3>
+                    <p class="text-secondary small text-uppercase mb-0" style="font-size: 0.7rem;">Predictions</p>
+                </div>
+                <div class="col-6">
+                    <h3 class="fw-bold text-success mb-1">${{ avg_price|floatformat:0 }}</h3>
+                    <p class="text-secondary small text-uppercase mb-0" style="font-size: 0.7rem;">Avg Value (USD)</p>
+                </div>
+            </div>
+            
+            <hr class="my-4 border-secondary-subtle">
+            
+            <div class="text-start">
+                <p class="mb-2"><i class="fa-solid fa-envelope text-primary me-2"></i> <span class="text-secondary small">{{ user.email }}</span></p>
+                <p class="mb-2"><i class="fa-solid fa-phone text-primary me-2"></i> <span class="text-secondary small">{% if user.profile.phone %}{{ user.profile.phone }}{% else %}Not specified{% endif %}</span></p>
+                <p class="mb-0"><i class="fa-solid fa-location-dot text-primary me-2"></i> <span class="text-secondary small">{% if user.profile.location %}{{ user.profile.location }}{% else %}Not specified{% endif %}</span></p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Right Column: Settings Form -->
+    <div class="col-lg-8 mb-4">
+        <div class="glass-card p-4">
+            <h4 class="fw-bold mb-4">Update Profile Details</h4>
+            
+            <form method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+                
+                <h5 class="fw-semibold text-secondary mb-3" style="font-size: 0.9rem; text-transform: uppercase;">User Information</h5>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="{{ u_form.first_name.id_for_label }}" class="form-label">First Name</label>
+                        {{ u_form.first_name }}
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="{{ u_form.last_name.id_for_label }}" class="form-label">Last Name</label>
+                        {{ u_form.last_name }}
+                    </div>
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="{{ u_form.username.id_for_label }}" class="form-label">Username</label>
+                        {{ u_form.username }}
+                        <div class="form-text text-secondary" style="font-size: 0.75rem;">Username cannot be changed.</div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="{{ u_form.email.id_for_label }}" class="form-label">Email Address</label>
+                        {{ u_form.email }}
+                    </div>
+                </div>
+                
+                <h5 class="fw-semibold text-secondary mt-4 mb-3" style="font-size: 0.9rem; text-transform: uppercase;">Contact & Personalization</h5>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="{{ p_form.phone.id_for_label }}" class="form-label">Phone Number</label>
+                        {{ p_form.phone }}
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="{{ p_form.location.id_for_label }}" class="form-label">Location (City, Country)</label>
+                        {{ p_form.location }}
+                    </div>
+                </div>
+                
+                <div class="mb-4">
+                    <label for="{{ p_form.profile_picture.id_for_label }}" class="form-label">Profile Avatar Image</label>
+                    {{ p_form.profile_picture }}
+                    <div class="form-text text-secondary" style="font-size: 0.75rem;">Upload a square image. JPG, PNG formats.</div>
+                </div>
+                
+                <div class="mt-4 pt-2 d-flex gap-2">
+                    <button type="submit" class="btn btn-custom px-4 fw-bold">Save Modifications</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,29 @@
+# Python virtual environments
+.venv/
+venv/
+env/
+ENV/
+
+# Python compiled files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Local environments configuration
+.env
+.env.local
+.env.*.local
+
+# Django Media and Staging DB
+db.sqlite3
+db.sqlite3-journal
+media/profile_pics/
+staticfiles/
+
+# Stored large machine learning models
+# saved_models/*.pkl
+# saved_models/*.joblib
+
+# Operating System files
+.DS_Store
+Thumbs.db
