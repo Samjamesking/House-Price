@@ -15,8 +15,7 @@ DEBUG = os.getenv('DEBUG', 'True').lower() in ('true', '1', 't')
 
 # Split allowed hosts from env or fallback to localhost
 hosts = os.getenv('ALLOWED_HOSTS', '127.0.0.1,localhost')
-ALLOWED_HOSTS = [h.strip() for h in hosts.split(',') if h.strip()]
-
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', '.onrender.com']
 # Application definition
 
 INSTALLED_APPS = [
